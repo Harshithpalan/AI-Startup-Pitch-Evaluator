@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Startup Pitch Evaluator</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #475569;
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-2: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--gradient-1);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .card-icon.blue { background: rgba(99, 102, 241, 0.2); color: var(--primary); }
+        .card-icon.green { background: rgba(16, 185, 129, 0.2); color: var(--secondary); }
+        .card-icon.yellow { background: rgba(245, 158, 11, 0.2); color: var(--accent); }
+        .card-icon.red { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-input);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .upload-zone {
+            border: 3px dashed var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .upload-zone .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .upload-zone h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .upload-zone p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .score-card {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .score-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .score-label {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .score-bar {
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease-out;
+            width: 0%;
+        }
+
+        .score-fill.blue { background: var(--gradient-1); }
+        .score-fill.green { background: var(--gradient-2); }
+        .score-fill.yellow { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .score-fill.red { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+
+        .feedback-item {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            border-left: 4px solid;
+        }
+
+        .feedback-item.strength { border-color: var(--secondary); }
+        .feedback-item.weakness { border-color: var(--danger); }
+        .feedback-item.suggestion { border-color: var(--accent); }
+
+        .feedback-item h4 {
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback-item p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tag.green { background: rgba(16, 185, 129, 0.2); color: var(--secondary); }
+        .tag.yellow { background: rgba(245, 158, 11, 0.2); color: var(--accent); }
+        .tag.red { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .tag.blue { background: rgba(99, 102, 241, 0.2); color: var(--primary); }
+
+        .overall-score {
+            text-align: center;
+            padding: 30px;
+            background: var(--gradient-1);
+            border-radius: 16px;
+            margin-bottom: 25px;
+        }
+
+        .overall-score .big-number {
+            font-size: 5rem;
+            font-weight: 900;
+            line-height: 1;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .overall-score .label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        .overall-score .verdict {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-top: 15px;
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .market-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-input);
+            border-radius: 12px;
+        }
+
+        .metric .value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .metric .label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .check-icon.pass { background: rgba(16, 185, 129, 0.2); color: var(--secondary); }
+        .check-icon.fail { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .check-icon.partial { background: rgba(245, 158, 11, 0.2); color: var(--accent); }
+
+        .results-section {
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: var(--bg-input);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: var(--text-secondary);
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+            border-color: var(--border);
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--bg-input);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+        }
+
+        .step.active {
+            color: var(--primary);
+        }
+
+        .step.done {
+            color: var(--secondary);
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-input);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .step.active .step-icon {
+            background: var(--primary);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        .step.done .step-icon {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 AI Startup Pitch Evaluator</h1>
+            <p>Get comprehensive analysis, market fit evaluation, and investor feedback for your pitch deck</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Input Section -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon blue">📋</div>
+                    <div>
+                        <div class="card-title">Pitch Information</div>
+                        <div class="card-subtitle">Enter your startup details</div>
+                    </div>
+                </div>
+
+                <form id="pitchForm">
+                    <div class="form-group">
+                        <label>Startup Name</label>
+                        <input type="text" id="startupName" placeholder="e.g., TechVenture AI" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Industry</label>
+                            <select id="industry">
+                                <option value="">Select Industry</option>
+                                <option value="fintech">FinTech</option>
+                                <option value="healthtech">HealthTech</option>
+                                <option value="edtech">EdTech</option>
+                                <option value="saas">SaaS</option>
+                                <option value="ecommerce">E-Commerce</option>
+                                <option value="ai-ml">AI/ML</option>
+                                <option value="cleantech">CleanTech</option>
+                                <option value="biotech">BioTech</option>
+                                <option value="gaming">Gaming</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Stage</label>
+                            <select id="stage">
+                                <option value="">Select Stage</option>
+                                <option value="idea">Idea Stage</option>
+                                <option value="mvp">MVP</option>
+                                <option value="seed">Seed</option>
+                                <option value="series-a">Series A</option>
+                                <option value="series-b">Series B+</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Problem Statement</label>
+                        <textarea id="problem" placeholder="What problem does your startup solve?"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Solution / Value Proposition</label>
+                        <textarea id="solution" placeholder="How does your product/service solve this problem?"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Target Market Size (TAM)</label>
+                            <input type="text" id="tam" placeholder="e.g., $50B">
+                        </div>
+                        <div class="form-group">
+                            <label>Revenue Model</label>
+                            <input type="text" id="revenue" placeholder="e.g., SaaS Subscription">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Business Model / How You Make Money</label>
+                        <textarea id="businessModel" placeholder="Describe your revenue streams and pricing strategy"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Team Size</label>
+                            <input type="number" id="teamSize" placeholder="e.g., 12" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Ask (Funding)</label>
+                            <input type="text" id="fundingAsk" placeholder="e.g., $2M">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Key Differentiators / Competitive Advantage</label>
+                        <textarea id="differentiators" placeholder="What makes you different from competitors?"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Traction / Key Metrics</label>
+                        <textarea id="traction" placeholder="e.g., 10,000 MAU, $100K MRR, 50% MoM growth"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Use of Funds</label>
+                        <textarea id="useOfFunds" placeholder="How will you use the investment?"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="analyzeBtn">
+                        <span>🔍</span> Analyze Pitch Deck
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div class="card results-section" id="resultsSection">
+                <!-- Loading State -->
+                <div class="loading" id="loadingState">
+                    <div class="spinner"></div>
+                    <h3>Analyzing Your Pitch...</h3>
+                    <p style="color: var(--text-secondary); margin-top: 10px;">Our AI is evaluating multiple dimensions</p>
+                    <div class="progress-steps">
+                        <div class="step active" id="step1">
+                            <div class="step-icon">1</div>
+                            <span>Content</span>
+                        </div>
+                        <div class="step" id="step2">
+                            <div class="step-icon">2</div>
+                            <span>Market</span>
+                        </div>
+                        <div class="step" id="step3">
+                            <div class="step-icon">3</div>
+                            <span>Strategy</span>
+                        </div>
+                        <div class="step" id="step4">
+                            <div class="step-icon">4</div>
+                            <span>Score</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Content -->
+                <div id="resultsContent" style="display: none;">
+                    <div class="overall-score">
+                        <div class="big-number" id="overallScore">0</div>
+                        <div class="label">Overall Pitch Score</div>
+                        <div class="verdict" id="verdict">Loading...</div>
+                    </div>
+
+                    <div class="tabs">
+                        <div class="tab active" data-tab="scores">📊 Scores</div>
+                        <div class="tab" data-tab="feedback">💬 Feedback</div>
+                        <div class="tab" data-tab="market">📈 Market Fit</div>
+                        <div class="tab" data-tab="checklist">✅ Checklist</div>
+                    </div>
+
+                    <div class="tab-content active" id="scores-tab">
+                        <div class="score-card">
+                            <div class="score-header">
+                                <span class="score-label">🎯 Problem Clarity</span>
+                                <span class="score-value" id="score-problem">0</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill blue" id="bar-problem"></div>
+                            </div>
+                        </div>
+
+                        <div class="score-card">
+                            <div class="score-header">
+                                <span class="score-label">💡 Solution Strength</span>
+                                <span class="score-value" id="score-solution">0</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill green" id="bar-solution"></div>
+                            </div>
+                        </div>
+
+                        <div class="score-card">
+                            <div class="score-header">
+                                <span class="score-label">📈 Market Opportunity</span>
+                                <span class="score-value" id="score-market">0</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill yellow" id="bar-market"></div>
+                            </div>
+                        </div>
+
+                        <div class="score-card">
+                            <div class="score-header">
+                                <span class="score-label">💰 Business Model</span>
+                                <span class="score-value" id="score-business">0</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill blue" id="bar-business"></div>
+                            </div>
+                        </div>
+
+                        <div class="score-card">
+                            <div class="score-header">
+                                <span class="score-label">🏆 Competitive Edge</span>
+                                <span class="score-value" id="score-compete">0</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill green" id="bar-compete"></div>
+                            </div>
+                        </div>
+
+                        <div class="score-card">
+                            <div class="score-header">
+                                <span class="score-label">👥 Team & Execution</span>
+                                <span class="score-value" id="score-team">0</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill yellow" id="bar-team"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="feedback-tab">
+                        <h3 style="margin-bottom: 15px; color: var(--secondary);">💪 Strengths</h3>
+                        <div id="strengthsList"></div>
+
+                        <h3 style="margin: 20px 0 15px; color: var(--danger);">⚠️ Areas for Improvement</h3>
+                        <div id="weaknessesList"></div>
+
+                        <h3 style="margin: 20px 0 15px; color: var(--accent);">💡 Suggestions</h3>
+                        <div id="suggestionsList"></div>
+                    </div>
+
+                    <div class="tab-content" id="market-tab">
+                        <h3 style="margin-bottom: 15px;">Market Fit Analysis</h3>
+                        
+                        <div class="market-metrics" style="margin-bottom: 25px;">
+                            <div class="metric">
+                                <div class="value" id="market-score">0%</div>
+                                <div class="label">Market Fit Score</div>
+                            </div>
+                            <div class="metric">
+                                <div class="value" id="market-timing">-</div>
+                                <div class="label">Market Timing</div>
+                            </div>
+                            <div class="metric">
+                                <div class="value" id="market-competition">-</div>
+                                <div class="label">Competition Level</div>
+                            </div>
+                        </div>
+
+                        <div id="marketFeedback"></div>
+                    </div>
+
+                    <div class="tab-content" id="checklist-tab">
+                        <h3 style="margin-bottom: 15px;">Pitch Deck Completeness</h3>
+                        <ul class="checklist" id="checklistItems"></ul>
+                    </div>
+
+                    <div class="export-buttons">
+                        <button class="btn btn-secondary" onclick="exportReport()">
+                            📄 Export Report
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetForm()">
+                            🔄 New Analysis
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>AI Startup Pitch Evaluator — Helping founders build investor-ready pitches</p>
+        </footer>
+    </div>
+
+    <script>
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+            });
+        });
+
+        // Form submission
+        document.getElementById('pitchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            analyzePitch();
+        });
+
+        function analyzePitch() {
+            const data = getFormData();
+            
+            // Show loading
+            document.getElementById('resultsSection').classList.add('resultsSection');
+            document.getElementById('resultsSection').classList.add('active');
+            document.getElementById('loadingState').classList.add('active');
+            document.getElementById('resultsContent').style.display = 'none';
+
+            // Animate steps
+            animateSteps().then(() => {
+                const results = generateAnalysis(data);
+                displayResults(results);
+            });
+        }
+
+        function getFormData() {
+            return {
+                name: document.getElementById('startupName').value,
+                industry: document.getElementById('industry').value,
+                stage: document.getElementById('stage').value,
+                problem: document.getElementById('problem').value,
+                solution: document.getElementById('solution').value,
+                tam: document.getElementById('tam').value,
+                revenue: document.getElementById('revenue').value,
+                businessModel: document.getElementById('businessModel').value,
+                teamSize: document.getElementById('teamSize').value,
+                fundingAsk: document.getElementById('fundingAsk').value,
+                differentiators: document.getElementById('differentiators').value,
+                traction: document.getElementById('traction').value,
+                useOfFunds: document.getElementById('useOfFunds').value
+            };
+        }
+
+        async function animateSteps() {
+            const steps = ['step1', 'step2', 'step3', 'step4'];
+            for (let i = 0; i < steps.length; i++) {
+                if (i > 0) document.getElementById(steps[i-1]).classList.remove('active');
+                if (i > 0) document.getElementById(steps[i-1]).classList.add('done');
+                document.getElementById(steps[i]).classList.add('active');
+                await new Promise(r => setTimeout(r, 600));
+            }
+            document.getElementById(steps[3]).classList.remove('active');
+            document.getElementById(steps[3]).classList.add('done');
+        }
+
+        function generateAnalysis(data) {
+            // Calculate scores based on input
+            const problemScore = calculateProblemScore(data);
+            const solutionScore = calculateSolutionScore(data);
+            const marketScore = calculateMarketScore(data);
+            const businessScore = calculateBusinessScore(data);
+            const competeScore = calculateCompeteScore(data);
+            const teamScore = calculateTeamScore(data);
+            
+            const overallScore = Math.round((problemScore + solutionScore + marketScore + businessScore + competeScore + teamScore) / 6);
+
+            return {
+                overall: overallScore,
+                scores: {
+                    problem: problemScore,
+                    solution: solutionScore,
+                    market: marketScore,
+                    business: businessScore,
+                    compete: competeScore,
+                    team: teamScore
+                },
+                feedback: generateFeedback(data, { problemScore, solutionScore, marketScore, businessScore, competeScore, teamScore }),
+                marketFit: analyzeMarketFit(data),
+                checklist: generateChecklist(data)
+            };
+        }
+
+        function calculateProblemScore(data) {
+            let score = 50;
+            if (data.problem && data.problem.length > 50) score += 20;
+            if (data.problem && data.problem.length > 100) score += 15;
+            if (data.problem.toLowerCase().includes('pain') || data.problem.toLowerCase().includes('challenge') || data.problem.toLowerCase().includes('problem')) score += 15;
+            return Math.min(100, score + Math.floor(Math.random() * 10));
+        }
+
+        function calculateSolutionScore(data) {
+            let score = 50;
+            if (data.solution && data.solution.length > 50) score += 20;
+            if (data.solution && data.solution.length > 100) score += 15;
+            if (data.solution && data.solution.toLowerCase().includes('unique')) score += 15;
+            return Math.min(100, score + Math.floor(Math.random() * 10));
+        }
+
+        function calculateMarketScore(data) {
+            let score = 40;
+            if (data.tam) score += 25;
+            if (data.industry) score += 15;
+            if (data.tam && (data.tam.includes('B') || data.tam.includes('billion'))) score += 20;
+            return Math.min(100, score + Math.floor(Math.random() * 10));
+        }
+
+        function calculateBusinessScore(data) {
+            let score = 40;
+            if (data.revenue) score += 20;
+            if (data.businessModel && data.businessModel.length > 30) score += 20;
+            if (data.fundingAsk) score += 10;
+            return Math.min(100, score + Math.floor(Math.random() * 10));
+        }
+
+        function calculateCompeteScore(data) {
+            let score = 40;
+            if (data.differentiators && data.differentiators.length > 30) score += 30;
+            if (data.differentiators && data.differentiators.toLowerCase().includes('patent')) score += 15;
+            if (data.differentiators && data.differentiators.toLowerCase().includes('first')) score += 15;
+            return Math.min(100, score + Math.floor(Math.random() * 10));
+        }
+
+        function calculateTeamScore(data) {
+            let score = 45;
+            if (data.teamSize && parseInt(data.teamSize) > 3) score += 20;
+            if (data.teamSize && parseInt(data.teamSize) > 10) score += 15;
+            if (data.traction && data.traction.length > 20) score += 20;
+            return Math.min(100, score + Math.floor(Math.random() * 10));
+        }
+
+        function generateFeedback(data, scores) {
+            const strengths = [];
+            const weaknesses = [];
+            const suggestions = [];
+
+            // Analyze strengths
+            if (scores.problemScore >= 70) {
+                strengths.push({
+                    title: "Clear Problem Definition",
+                    text: "Your pitch clearly articulates the problem you're solving, which is crucial for investor engagement."
+                });
+            }
+            if (scores.solutionScore >= 70) {
+                strengths.push({
+                    title: "Strong Value Proposition",
+                    text: "Your solution effectively addresses the stated problem with clear value delivery."
+                });
+            }
+            if (data.tam && data.tam.includes('B')) {
+                strengths.push({
+                    title: "Significant Market Opportunity",
+                    text: `A ${data.tam} TAM indicates substantial market potential for scale.`
+                });
+            }
+            if (data.traction && data.traction.length > 20) {
+                strengths.push({
+                    title: "Demonstrated Traction",
+                    text: "Having measurable traction validates your business model and reduces investment risk."
+                });
+            }
+
+            // Analyze weaknesses
+            if (scores.problemScore < 60) {
+                weaknesses.push({
+                    title: "Problem Needs Clarification",
+                    text: "Consider making your problem statement more specific and relatable. Use data or stories to illustrate the pain point."
+                });
+            }
+            if (scores.solutionScore < 60) {
+                weaknesses.push({
+                    title: "Solution Differentiation Unclear",
+                    text: "Your value proposition needs to be sharper. Clearly articulate what makes your solution unique."
+                });
+            }
+            if (!data.tam) {
+                weaknesses.push({
+                    title: "Market Size Not Specified",
+                    text: "Investors need to see the market opportunity. Include TAM, SAM, and SOM calculations."
+                });
+            }
+            if (!data.traction) {
+                weaknesses.push({
+                    title: "No Traction Metrics",
+                    text: "Include key metrics like users, revenue, growth rate, or other validation indicators."
+                });
+            }
+            if (scores.businessScore < 60) {
+                weaknesses.push({
+                    title: "Business Model Needs Work",
+                    text: "Clearly define how you make money, unit economics, and path to profitability."
+                });
+            }
+
+            // Generate suggestions
+            suggestions.push({
+                title: "Strengthen Your Ask",
+                text: "Be specific about how much you're raising and exactly how the funds will be used to achieve milestones."
+            });
+            if (!data.useOfFunds) {
+                suggestions.push({
+                    title: "Detail Use of Funds",
+                    text: "Break down your planned allocation: product development, marketing, hiring, etc."
+                });
+            }
+            suggestions.push({
+                title: "Add Social Proof",
+                text: "Include testimonials, case studies, or partnerships that validate your solution."
+            });
+            if (data.stage === 'idea' || data.stage === 'mvp') {
+                suggestions.push({
+                    title: "Focus on Validation",
+                    text: "At your stage, emphasize customer discovery, pilot programs, and early traction metrics."
+                });
+            }
+
+            return { strengths, weaknesses, suggestions };
+        }
+
+        function analyzeMarketFit(data) {
+            let score = 50;
+            let timing = "Moderate";
+            let competition = "Moderate";
+            let feedback = [];
+
+            if (data.industry) {
+                const hotIndustries = ['ai-ml', 'healthtech', 'fintech', 'cleantech'];
+                if (hotIndustries.includes(data.industry)) {
+                    score += 15;
+                    timing = "Strong";
+                    feedback.push("Your industry is currently experiencing high investor interest and market growth.");
+                }
+            }
+
+            if (data.tam) {
+                if (data.tam.includes('B')) score += 15;
+                if (data.tam.includes('T') || data.tam.includes('trillion')) score += 25;
+            }
+
+            if (data.differentiators) {
+                if (data.differentiators.toLowerCase().includes('patent') || 
+                    data.differentiators.toLowerCase().includes('proprietary')) {
+                    score += 10;
+                    feedback.push("Proprietary technology or IP provides strong competitive moat.");
+                }
+            }
+
+            if (data.stage === 'series-a' || data.stage === 'series-b') {
+                competition = "High";
+                feedback.push("At your stage, expect thorough due diligence and comparison with similar companies.");
+            }
+
+            score = Math.min(100, score + Math.floor(Math.random() * 10));
+
+            if (feedback.length === 0) {
+                feedback.push("Consider adding more market validation data to strengthen your market fit narrative.");
+            }
+
+            return { score, timing, competition, feedback };
+        }
+
+        function generateChecklist(data) {
+            return [
+                { item: "Problem statement clearly defined", status: data.problem && data.problem.length > 30 ? 'pass' : 'fail' },
+                { item: "Solution / value proposition explained", status: data.solution && data.solution.length > 30 ? 'pass' : 'fail' },
+                { item: "Market size (TAM/SAM/SOM) provided", status: data.tam ? 'pass' : 'fail' },
+                { item: "Business model / revenue streams defined", status: (data.revenue || data.businessModel) ? 'pass' : 'fail' },
+                { item: "Competitive advantage articulated", status: data.differentiators && data.differentiators.length > 20 ? 'pass' : 'fail' },
+                { item: "Traction / key metrics included", status: data.traction && data.traction.length > 10 ? 'pass' : 'fail' },
+                { item: "Team qualifications mentioned", status: data.teamSize ? 'pass' : 'partial' },
+                { item: "Funding ask specified", status: data.fundingAsk ? 'pass' : 'fail' },
+                { item: "Use of funds detailed", status: data.useOfFunds && data.useOfFunds.length > 20 ? 'pass' : 'fail' },
+                { item: "Industry / market context provided", status: data.industry ? 'pass' : 'partial' }
+            ];
+        }
+
+        function displayResults(results) {
+            document.getElementById('loadingState').classList.remove('active');
+            document.getElementById('resultsContent').style.display = 'block';
+
+            // Animate overall score
+            animateNumber('overallScore', results.overall);
+
+            // Set verdict
+            const verdict = document.getElementById('verdict');
+            if (results.overall >= 80) verdict.textContent = "🏆 Investor Ready";
+            else if (results.overall >= 60) verdict.textContent = "📈 Good Foundation";
+            else if (results.overall >= 40) verdict.textContent = "⚡ Needs Work";
+            else verdict.textContent = "🔧 Major Revisions Needed";
+
+            // Animate individual scores
+            setTimeout(() => {
+                animateScore('problem', results.scores.problem);
+                animateScore('solution', results.scores.solution);
+                animateScore('market', results.scores.market);
+                animateScore('business', results.scores.business);
+                animateScore('compete', results.scores.compete);
+                animateScore('team', results.scores.team);
+            }, 300);
+
+            // Display feedback
+            displayFeedback(results.feedback);
+
+            // Display market fit
+            displayMarketFit(results.marketFit);
+
+            // Display checklist
+            displayChecklist(results.checklist);
+        }
+
+        function animateNumber(elementId, target) {
+            const element = document.getElementById(elementId);
+            let current = 0;
+            const increment = target / 30;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.round(current);
+            }, 30);
+        }
+
+        function animateScore(type, value) {
+            const scoreEl = document.getElementById(`score-${type}`);
+            const barEl = document.getElementById(`bar-${type}`);
+            
+            let current = 0;
+            const increment = value / 20;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= value) {
+                    current = value;
+                    clearInterval(timer);
+                }
+                scoreEl.textContent = Math.round(current);
+                barEl.style.width = `${current}%`;
+            }, 30);
+        }
+
+        function displayFeedback(feedback) {
+            const strengthsList = document.getElementById('strengthsList');
+            const weaknessesList = document.getElementById('weaknessesList');
+            const suggestionsList = document.getElementById('suggestionsList');
+
+            strengthsList.innerHTML = feedback.strengths.map(s => `
+                <div class="feedback-item strength">
+                    <h4>💪 ${s.title}</h4>
+                    <p>${s.text}</p>
+                </div>
+            `).join('');
+
+            weaknessesList.innerHTML = feedback.weaknesses.map(w => `
+                <div class="feedback-item weakness">
+                    <h4>⚠️ ${w.title}</h4>
+                    <p>${w.text}</p>
+                </div>
+            `).join('');
+
+            suggestionsList.innerHTML = feedback.suggestions.map(s => `
+                <div class="feedback-item suggestion">
+                    <h4>💡 ${s.title}</h4>
+                    <p>${s.text}</p>
+                </div>
+            `).join('');
+        }
+
+        function displayMarketFit(marketFit) {
+            document.getElementById('market-score').textContent = `${marketFit.score}%`;
+            document.getElementById('market-timing').textContent = marketFit.timing;
+            document.getElementById('market-competition').textContent = marketFit.competition;
+
+            const marketFeedback = document.getElementById('marketFeedback');
+            marketFeedback.innerHTML = marketFit.feedback.map(f => `
+                <div class="feedback-item suggestion">
+                    <p>${f}</p>
+                </div>
+            `).join('');
+        }
+
+        function displayChecklist(checklist) {
+            const checklistItems = document.getElementById('checklistItems');
+            checklistItems.innerHTML = checklist.map(item => `
+                <li>
+                    <span class="check-icon ${item.status}">${item.status === 'pass' ? '✓' : item.status === 'partial' ? '~' : '✗'}</span>
+                    <span>${item.item}</span>
+                    <span class="tag ${item.status === 'pass' ? 'green' : item.status === 'partial' ? 'yellow' : 'red'}">
+                        ${item.status === 'pass' ? 'Complete' : item.status === 'partial' ? 'Partial' : 'Missing'}
+                    </span>
+                </li>
+            `).join('');
+        }
+
+        function exportReport() {
+            const data = getFormData();
+            const results = generateAnalysis(data);
+            
+            let report = `
+AI STARTUP PITCH EVALUATION REPORT
+===================================
+Startup: ${data.name}
+Industry: ${data.industry}
+Stage: ${data.stage}
+
+OVERALL SCORE: ${results.overall}/100
+${results.overall >= 80 ? 'Verdict: Investor Ready' : results.overall >= 60 ? 'Verdict: Good Foundation' : 'Verdict: Needs Work'}
+
+SCORES:
+- Problem Clarity: ${results.scores.problem}/100
+- Solution Strength: ${results.scores.solution}/100
+- Market Opportunity: ${results.scores.market}/100
+- Business Model: ${results.scores.business}/100
+- Competitive Edge: ${results.scores.compete}/100
+- Team & Execution: ${results.scores.team}/100
+
+STRENGTHS:
+${results.feedback.strengths.map(s => `- ${s.title}: ${s.text}`).join('\n')}
+
+AREAS FOR IMPROVEMENT:
+${results.feedback.weaknesses.map(w => `- ${w.title}: ${w.text}`).join('\n')}
+
+SUGGESTIONS:
+${results.feedback.suggestions.map(s => `- ${s.title}: ${s.text}`).join('\n')}
+
+MARKET FIT SCORE: ${results.marketFit.score}%
+`;
+            
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${data.name || 'startup'}-pitch-evaluation.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function resetForm() {
+            document.getElementById('pitchForm').reset();
+            document.getElementById('resultsSection').classList.remove('active');
+            document.getElementById('resultsContent').style.display = 'none';
+            
+            // Reset tabs
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('.tab[data-tab="scores"]').classList.add('active');
+            document.getElementById('scores-tab').classList.add('active');
+        }
+    </script>
+</body>
+</html>
